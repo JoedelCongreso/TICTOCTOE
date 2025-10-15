@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tic Tac Toe React Demo</title> <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- React and ReactDOM from CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <!-- Babel for JSX transpiling -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Your React code with type="text/babel" -->
+  <script type="text/babel">
+    const { useState } = React;
+
+    function calculateWinner(squares) {
+      const lines = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],
+        [0, 4, 8], [2, 4, 6]
+      ];
+
+      for (const [a, b, c] of lines) {
+        if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+          return squares[a];
+        }
+      }
+      return null;
+    }
+
+    function TicTacToe() {
+      const [board, setBoard] = useState(Array(9).fill(null));
+      const [xIsNext, setXIsNext] = useState(true);
+      const winner = calculateWinner(board);
+
+      function handleClick(index) {
+        if (board[index] || winner) return;
+
+        const newBoard = board.slice();
+        newBoard[index] = xIsNext ? "X" : "O";
+
+        setBoard(newBoard);
+        setXIsNext(!xIsNext);
+      }
+
+      function resetGame() {
+        setBoard(Array(9).fill(null));
+        setXIsNext(true);
+      }
+
+      function renderSquare(index) {
+  let content = null;
+  if (board[index] === "X") {
+    content = <img src="x.png" alt="" style={{ width: '85px', height: '80px', borderRadius: '12px' }} />;
+  } else if (board[index] === "O") {
+    content = <img src="o.png" alt="" style={{ width: '85px', height: '80px', borderRadius: '12px' }} />;
+  }
+
+  return (
+    <button className="square" onClick={() => handleClick(index)}>
+      {content}
+    </button>
+  );
+}
+
+      return (
+        <div className="game">
+          <h1>Tic Tac Toe</h1>
+          <div className="status">
+            {winner
+              ? `Winner: ${winner}`
+              : board.includes(null)
+              ? `Next Player: ${xIsNext ? "X" : "O"}`
+              : "It's a Draw!"}
+          </div>
+          <div className="board">
+            {[0, 1, 2].map(row => (
+              <div key={row} className="board-row">
+                {renderSquare(row * 3)}
+                {renderSquare(row * 3 + 1)}
+                {renderSquare(row * 3 + 2)}
+              </div>
+            ))}
+          </div>
+          <button className="reset-button" onClick={resetGame}>
+            Reset
+          </button>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<TicTacToe />);
+  </script>
+</body>
+</html>
